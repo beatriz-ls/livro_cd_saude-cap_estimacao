@@ -1,5 +1,16 @@
 ---
-bibliography: references.bib
+title: ""
+author: 
+  - name: "Beatriz Lima Silveira"
+  - name: "Esley Caminhas Ferreira"
+format:
+  html:
+    theme: minty
+    toc: true
+    toc-location: left
+    toc-depth: 2
+    toc-title: "Índice"
+    page-layout: full
 ---
 
 # Estimação
@@ -15,8 +26,11 @@ Apesar de, no presente caso, termos acesso aos dados de toda a população de ge
 Vamos observar a ocorrência de saturação baixa de oxigênio no sangue entre as gestantes e puérperas diagnosticadas com COVID-19 no período de março de 2020 a dezembro de 2021. A variável que representa esse sintoma é `saturacao`, e vamos considerar que o caso será selecionado por meio de um sorteio entre os registros válidos.
 
 ```{r}
+# Le o arquivo RDS com os dados da COVID
 dados <- readr::read_rds("dados/dados_covid[LIMPO].rds")
+# Remove as linhas onde a variavel 'saturacao' esta ausente (NA)
 dados <- dplyr::filter(dados, !is.na(saturacao))
+# Sorteia um valor aleatorio da coluna 'saturacao'
 x <- sample(dados$saturacao, 1)
 x
 ```
@@ -24,19 +38,17 @@ x
 Usando a função `sample()`, sorteamos um indivíduo aleatoriamente dessa população e obtemos a ocorrência ou não de baixa saturação, que no caso acima foi `r x`. Agora, vamos repetir esse procedimento algumas vezes e observar seus resultados.
 
 ```{r}
+# Repete 10 vezes e sorteia um valor aleatorio da coluna
 for (i in 1:10) print(sample(dados$saturacao, 1))
-
 ```
 
 Podemos perceber que, mesmo sendo executado sob as mesmas condições, o sorteio de cada caso pode fornecer resultados distintos. Esse exemplo ilustra um **experimento aletório** $\epsilon$, definido formalmente como um experimento que, ao ser repetido sob as mesmas circunstâncias, podem fornecer resultados diferentes.
 
-## AQUI ##
-
-É evidente que não conseguimos prever o resultado de um experimento aleatório, mas uma ferramenta útil para obter seu comportamento é conhecer quais os "desfechos" possíveis desse experimento. Voltando ao exemplo anterior, é possível obter essa informação usando a função `unique()`, a qual retorna os elementos únicos de um vetor. No caso abaixo, o vetor analisado armazena as ocorrências ou não de baixa saturação de oxigênio.
+É evidente que não é possível prever o resultado de um experimento aleatório, mas uma ferramenta útil para descrever seu comportamento é identificar os possíveis "desfechos". Retomando o exemplo anterior, essa informação pode ser obtida usando a funcao `unique()`, que extrai valores exclusivos do vetor, removendo as ocorrências duplicadas. No codigo abaixo, o vetor analisado armazena as ocorrências de baixa saturacao de oxigenio:
 
 ```{r}
+# Retorna os valores presentes no vetor
 unique(dados$saturacao)
-
 ```
 
 Analisando a saída acima, observamos que as possibilidades de respostas são `"não"` e `"sim"`, o que denominamos de **espaço amostral**, denotado por $\Omega$ e caracterizado como o conjunto de todos os resultados possíveis de um experimento $\epsilon$. Assim, nesse caso $$ \Omega=\{sim, não\} $$
@@ -52,7 +64,7 @@ $$
 
 ### Variáveis Aleatórias
 
-Em muitos casos, o espaço amostral de um experimento não será numérico. Por exemplo, retirando três indivíduos da população e observando a sua saturação de oxigênio, obtemos $\Omega=\{(x_1 x_2 x_3)|x_i=\text{sim ou não }, i=1,2,3\}$. Porém, muitas vezes é útil que os resultados dessa variável sejam registrados como números, possibilitando a realização de algumas mensurações. Aqui, por exemplo, ao invés de registrar a categoria da saturação de cada um dos três indivíduos, podemos tomar o número de indivíduos cuja respota é "sim", atribuindo o valor 1 a aqueles que apresentam saturação de oxigênio baixa e o valor zero aos que não apresentam. Isso se enquadra como uma **variável aleatória**, ou seja, uma função $X$ que associa a cada elemento $\omega \in \Omega$ um número real $X(\omega)$.
+Em muitos casos, o espaço amostral de um experimento não será numérico. Por exemplo, retirando três indivíduos da população e observando a sua saturação de oxigênio, obtemos $\Omega=\{(x_1 x_2 x_3)|x_i=\text{sim ou não }, i=1,2,3\}$. Porém, muitas vezes é útil que os resultados dessa variável sejam registrados como números, o que possibilita a realização de algumas mensurações. Neste exemplo, em vez de registrar a categoria da saturação de cada um dos três indivíduos, podemos contar o número de indivíduos cuja resposta é "sim", atribuindo o valor 1 àqueles que apresentam saturação de oxigênio baixa e o valor 0 aos que não apresentam. Isso se enquadra como uma **variável aleatória**, ou seja, uma função $X$ que associa a cada elemento $\omega \in \Omega$ um número real $X(\omega)$.
 
 ```{r echo=FALSE, fig.cap="**Figura 1**", out.width = '100%'}
 knitr::include_graphics("figuras_estimacao/variavel_aleatoria.png")
@@ -64,7 +76,7 @@ Para continuar a abordagem dos conceitos relacionados às variáveis aleatórias
 
 #### Variáveis aleatórias discretas
 
-Uma variável é considerada discreta se $R_x$ for um conjunto finito ou infinito enumerável. O número de indivíduos com saturação baixa em uma amostra de tamanho 3, por exemplo, é uma variável aleatória discreta, já que podemos listar todos os seus possíveis valores.
+Uma variável é considerada discreta se $R_x$ for um conjunto finito ou infinito enumerável. O número de indivíduos com saturação baixa em uma amostra de tamanho 3, por exemplo, é uma variável aleatória discreta, pois podemos listar todos os seus possíveis valores.
 
 Agora vamos pensar em como podemos analisar a distribuição de uma variável aleatória discreta $X$. Já que conhecemos os seus possíveis valores, podemos associar a cada um deles uma probabilidade de ocorrência, formando assim uma **função massa de probabilidade** de $X$, definida como
 
@@ -86,6 +98,7 @@ Para exemplificar, vamos analisar a variável `variante`, que indica a variante 
 Primeiramente, vamos obter a proporção da variante gama na população:
 
 ```{r}
+# Calcula a proporcao de registros da variante "gama" no vetor dados$variante
 p_gama <- length(which(dados$variante=="gama"))/length(dados$variante)
 p_gama
 ```
@@ -103,14 +116,18 @@ $$
 Vamos interpretar essas informações visualmente, usando um gráfico em que o eixo x apresenta os valores possíveis da variável $Y$ e o eixo y as respectivas probabilidades de ocorrência.
 
 ```{r}
+# Valores da variavel aleatoria discreta Y
 y <- c(0, 1, 2)
+# Probabilidades associadas a cada valor de Y
 py <- c(0.2353917, 0.4995602, 0.2650481)
+# Data.frame dos valores da variavel Y e as probabilidades equivalentes
 df <- data.frame(y, py)
 df
 ```
 
 ```{r, echo=FALSE}
-plot(y, py, type='h', lwd=4)
+# Cria graficos de funcao de massa de probabilidade
+plot(y, py, type='h', lwd=4, xlab="Valores de Y", ylab="P(Y = y)", main="Função Massa de Probabilidade")
 
 ```
 
@@ -122,25 +139,28 @@ F(y) =
     0.7349519 & se \ 1 \leq y < 2; \\
     1 & se \ y \geq 2.
     \end{cases}
-$$
+$$ Podemos calcular essa função no R:
 
 ```{r}
+# Carrega o pacote dplyr
 library(dplyr)
-df <- df %>%
+# Cria uma nova variavel Fy no data frame df, que representa a distribuicao acumulada dos pesos (py)
+df <- df |>
   dplyr::mutate(df, Fy = cumsum(py))
 df
 
 ```
 
-```{r, echo =F}
-simulacao <- sample(df$y, size=100000, prob=df$py, replace=T)
+E representá-la graficamente:
 
-plot(ecdf(simulacao), xlab="Valores da variável aleatória Y", ylab="Probabilidade acumulada", main=" ")
-grid()
+```{r, echo =F}
+# Gera uma amostra aleatoria da variavel y com 100.000 observacoes
+# A amostragem e feita com reposicao (replace = TRUE) e respeita as probabilidades (pesos) indicadas por py
+simulacao <- sample(df$y, size = 100000, prob = df$py, replace = TRUE)
 
 ```
 
-Outra medida relevante quando o assunto é variáveis aleatórias é a chamada **esperança**, definida como o valor esperado da variável aleatória, ou seja, o resultado esperado dessa variável aleatória em média a longo prazo. $$
+Outra medida relevante quando o assunto é variáveis aleatórias é a **esperança**, definida como o valor esperado da variável aleatória, ou seja, o resultado esperado dessa variável aleatória em média a longo prazo. $$
 E(X)=\sum_{x_i \in R_x} x_i p(x_i)
 $$ Também podemos interpretar a esperança como uma média ponderada dos elementos do espaço amostral da varíável aleatória $X$, em que os "pesos" são as suas respectivas probabilidades.
 
@@ -149,11 +169,14 @@ Assim, para o exemplo anterior, calculamos a sua esperança como: $$
 E(Y)=0P(Y=0)+1P(Y=1)+2P(Y=2) \\
 E(Y)= 0.4995602 + 0.5300962 = 1.029656
 \end{align}
-$$ Interpretando esse resultado, repetindo esse experimento infinitas vezes, a média dos resultados seria igual a 0.7646083. Ou seja, em média, esperamos que 1.029656 indivíduos apresentem a variante gama ao selecionarmos dois deles aleatoriamente nessa população.
+$$
+
+Interpretando esse resultado, repetindo esse experimento infinitas vezes, a média dos resultados seria igual a 0.7646083. Ou seja, em média, esperamos que 1.029656 indivíduos apresentem a variante gama ao selecionarmos dois deles aleatoriamente nessa população.
 
 A esperança também pode ser calculada usando o *RStudio*, usando a função `weighted.mean`, em que o primeiro argumento é um vetor que armazena os valores, e o segundo um vetor que armazena suas respectivas probabilidaes.
 
 ```{r}
+# Calcula a media ponderada da variavel y, utilizando os pesos py
 weighted.mean(x=df$y, w=df$py)
 ```
 
@@ -173,6 +196,7 @@ Var(X)=E(X^2)-[E(X)]^2, \ \text{sendo} \ E(X^2)=\sum_{x_i\in R_x}x^2p(x_i)
 $$ Dessa forma, para a variável aleatória $Y$, teremos:
 
 ```{r}
+# Calcula a variancia ponderada da variavel y no data frame df, usando pesos py
 variancia = weighted.mean(x=(df$y)^2, w=df$py) - weighted.mean(x=df$y, w=df$py)^2
 variancia
 ```
@@ -192,13 +216,13 @@ Assim como a esperança, a variância também satisfaz algumas propriedades:
 ```
 ##### Modelos de probabilidade discretos
 
-Algumas variáveis aleatórias se adaptam a modelos de probabilidade já definidos, que serão descritos a seguir.
+Algumas variáveis aleatórias assumem apenas valores inteiros e podem ser representadas por modelos de probabilidade discretos já consolidados na teoria das probabilidades. Esses modelos descrevem o comportamento dessas variáveis e permitem calcular a probabilidade de ocorrência de determinados valores. A seguir, apresentam-se os principais modelos discretos utilizados.
 
 ###### Modelo Bernoulli
 
-O modelo Bernoulli é utilizado quando queremos descrever a ocorrêcia ou não de um evento, que consideramos como sendo o "sucesso". Assim, seu espaço amostral apresenta apenas dois elementos: o valor 1 representando a ocorrência do "sucesso" e o valor 0 indicando o "fracasso", ou seja, a não ocorrência do sucesso. Para cada experimento alestório, definimos qual será o evento denominado de "sucesso". Por exemplo, pensando na ocorrência ou não de cardiopatia em uma gestante ou puérpera diagnosticada com COVID-19 de março de 2020 a dezembro de 2021, podemos definir a presença de cardiopatia como o evento que chamamos de "sucesso" e a não presença como o "fracasso", usando o modelo Bernoulli para compreeder o comportamento dessa variável.
+O modelo de Bernoulli é utilizado para descrever situações em que há apenas duas possibilidades de resultado em um experimento aleatório: a ocorrência ou não ocorrência de um determinado evento, que chamamos de "sucesso". Assim, seu espaço amostral apresenta apenas dois elementos: o valor 1 representando a ocorrência do "sucesso" e o valor 0 indicando o "fracasso", ou seja, a não ocorrência do sucesso. Para cada experimento alestório, definimos qual será o evento denominado de "sucesso". Por exemplo, pensando na ocorrência ou não de cardiopatia em uma gestante ou puérpera diagnosticada com COVID-19 de março de 2020 a dezembro de 2021, podemos definir a presença de cardiopatia como o evento que chamamos de "sucesso" e a não presença como o "fracasso", usando o modelo Bernoulli para compreeder o comportamento dessa variável.
 
-Desse modo, tconsiderando uma probabilidade $p$ de sucesso, a variável aleatória $X$ apresenta a seguinte função massa de probabilidade
+Desse modo, considerando uma probabilidade $p$ de sucesso, a variável aleatória $X$ apresenta a seguinte função massa de probabilidade
 
 ```{=tex}
 \begin{align}
@@ -266,9 +290,10 @@ $$
 $$ A seguir apresentamos graficamente a função densidade de probabilidade das idades das gestantes e puérperas diagnosticadas com COVID-19 no de março de 2020 a dezembro de 2021.
 
 ```{r}
-library("ggplot2")
-ggplot(data=dados, aes(x=idade_anos)) +
-  geom_density(fill="lightblue", color = "black") +
+library(ggplot2)
+
+ggplot(data=dados, aes(x=idade_anos)) +  # Curva de densidade com preenchimento azul claro e contorno preto
+  geom_density(fill="lightblue", color = "black") + # Rotulos dos eixos
   labs(x = "Idade (anos)", y = "Densidade") +
   theme_minimal()
 ```
@@ -304,11 +329,16 @@ F(x)=P(X\leq x)=\int_{-\infty}^{x}f(x)dx
 $$ Se, no exemplo anterior queremos calcular a probabilidade da idade de um indivíduo sorteado ao acaso ser menor ou igual a 20, desejamos calcular a área
 
 ```{r, echo=F}
+# Calcula a densidade da variavel idade_anos
 densidade <- density(dados$idade_anos)
 
+# Cria um data frame com os valores da densidade para uso na area preenchida do grafico
 area_colorida <- data.frame(x = densidade$x, y = densidade$y)
+
+# Filtra os valores da densidade para a faixa de idade entre 0 e 20 anos
 area_colorida <- subset(area_colorida, x >= 0 & x <= 20)
 
+# Cria o grafico de densidade
 ggplot(dados, aes(x = idade_anos)) +
   geom_density(color = "black") +
   geom_ribbon(data = area_colorida,
@@ -329,6 +359,8 @@ Var(X)=E(X^2)-[E(X)]^2, \ \text{onde} \ E(X^2)=\int^{\infty}_{-\infty}x^2f(x)dx
 \end{align}
 ```
 ##### Modelos de probabilidade contínuos
+
+Enquanto os modelos discretos são utilizados para variáveis que assumem valores inteiros e bem definidos, os modelos de probabilidade contínuos são aplicados quando a variável aleatória pode assumir qualquer valor dentro de um intervalo real. Nesses casos, em vez de calcular a probabilidade de valores isolados, interessa-nos determinar a probabilidade de que a variável esteja dentro de um certo intervalo. Assim como ocorre nos modelos discretos, os modelos contínuos também possuem estruturas matemáticas bem definidas, consolidados na teoria das probabilidades. A seguir, apresentam-se os principais modelos contínuos.
 
 ###### Modelo Uniforme
 
@@ -353,10 +385,14 @@ $$
 Para facilitar a compreensão dessa distribuição, vamos visualizar a sua função densidade de probabilidade. A seguir vamos simular uma distribuição uniforme no intervalo $[0, 5]$.
 
 ```{r}
+# Gera 1 milhao de numeros aleatorios de uma distribuicao uniforme continua
+# no intervalo de 0 a 5
 uniforme <- runif(1000000, min=0, max=5)
 
+# Cria um data frame com os valores gerados
 df_unif <- data.frame(uniforme)
 
+# Cria o grafico da densidade dos valores gerados
 ggplot(data=df_unif, aes(x=uniforme)) +
   geom_density(fill="lightblue", color = "black") +
   labs(x = "Valores da distribuição uniforme", y = "Densidade") +
@@ -377,9 +413,14 @@ f(x) =
 $$ Considerando $\lambda=1$, representamos $f(x)$ graficamente como
 
 ```{r}
+# Gera 100.000 numeros aleatorios de uma distribuicao exponencial
+# com taxa (lambda) igual a 1
 exponencial <- rexp(100000, 1)
+
+# Cria um data frame com os valores gerados
 df_exp <- data.frame(exponencial)
 
+# Cria o grafico de densidade dos valores da distribuicao exponencial
 ggplot(data=df_exp, aes(x=exponencial)) +
   geom_density(fill="lightblue", color = "black") +
   labs(x = "Valores da distribuição exponencial", y = "Densidade") +
@@ -387,9 +428,11 @@ ggplot(data=df_exp, aes(x=exponencial)) +
 
 ```
 
-Também podemos escrever a sua esperança e variância como $$
+Também podemos escrever a sua esperança e variância como
+$$
 E(X)=\frac{1}{\lambda}
-$$ $$
+$$
+$$
 Var(X)=\frac{1}{\lambda^2}
 $$
 
@@ -404,10 +447,16 @@ $$
 Quando a distribuição normal apresenta parâmetros $\mu=0$ e $\sigma^2=1$, dizemos que é uma distribuição normal padrão, denotada como sendo a variável aleatória $Z$, cuja função de densidade é apresentada abaixo
 
 ```{r}
+# Garante reprodutibilidade dos resultados (a mesma amostra sera gerada toda vez)
 set.seed(2402)
+
+# Gera 1 milhao de numeros aleatorios de uma distribuicao normal padrao (media = 0, desvio padrao = 1)
 normal <- rnorm(1000000)
+
+# Cria um data frame com a amostra gerada
 df_normal <- data.frame(normal)
 
+# Cria o grafico de densidade da amostra normal
 ggplot(data=df_normal, aes(x=normal)) +
   geom_density(fill="lightblue", color = "black") +
   labs(x = "Valores da distribuição normal", y = "Densidade") +
@@ -420,7 +469,8 @@ Analisando o gráfico acima, observamos que os dados se concentram em torno da m
 
 Agora que estamos a parte de algumas definições que serão importantes para o entendimento do capítulo, podemos iniciar com o seu conteúdo propriamente dito. Em primeiro lugar, chamamos de **estimador** qualquer estatística cujos valores são utilizados para se estimar um parâmetro ou uma função de um parâmetro. Dessa forma, temos, portanto, que todo estimador será, também, uma variável aleatória, uma vez que eles são funções das variáveis aleatórias que compõem nossa amostra. Quando coletamos a amostra, observamos os valores das variáveis aleatórias que a compõem e os substituímos na expressão do estimador, obtemos o que chamamos de **estimativa**. Estimativas não são valores aleatórios, mas sim realizações de variáveis aleatórias (dos estimadores).
 
-Diversos métodos foram desenvolvidos ao longo dos anos para se encontrar estatísticas que possam ser utilizadas como estimadores. Entre os mais conhecidos, podemos citar: o **método dos momentos**, que encontra estimadores relacionando os **momentos** amostrais e populacionais; o **método dos mínimos quadrados**, a partir do qual encontramos o estimador que minimiza a chamada **soma de quadrado dos erros**; e o **método da máxima verossimilhança**, provavelmente o mais conhecido e utilizado, por meio do qual encontramos o estimador que maximiza a probabilidade de a amostra coletada ter sido observada, através da maximização da **função de verossimilhança**. Não entraremos em maiores detalhes sobre nenhum desses métodos, uma vez que nosso objetivo aqui é introduzir o conceito de estimação de forma mais intuitiva. Entretanto, caso seja de seu interesse, já publicamos, no site do Observatório, um texto que pode te ajudar a entender o método da máxima verossimilhança e tudo aquilo que está por trás dele. O post está disponível <a href = https://observatorioobstetricobr.org/livro-e-tutoriais/funcao-de-verossimilhanca/ target = _blank> neste link </a>.
+Diversos métodos foram desenvolvidos ao longo dos anos para se encontrar estatísticas que possam ser utilizadas como estimadores. Entre os mais conhecidos, podemos citar: o **método dos momentos**, que encontra estimadores relacionando os **momentos** amostrais e populacionais; o **método dos mínimos quadrados**, a partir do qual encontramos o estimador que minimiza a chamada **soma de quadrado dos erros**; e o **método da máxima verossimilhança**, provavelmente o mais conhecido e utilizado, por meio do qual encontramos o estimador que maximiza a probabilidade de a amostra coletada ter sido observada, através da maximização da **função de verossimilhança**. Não entraremos em maiores detalhes sobre nenhum desses métodos, uma vez que nosso objetivo aqui é introduzir o conceito de estimação de forma mais intuitiva. Entretanto, caso seja de seu interesse, já publicamos, no site do Observatório, um texto que pode te ajudar a entender o método da máxima verossimilhança e tudo aquilo que está por trás dele. O post está disponível <a href = https://observatorioobstetricobr.org/ciencia-de-dados/funcao-de-verossimilhanca/
+target = _blank> neste link </a>.
 
 O problema da estimação não se resume somente a encontrar estimadores. De fato, existem infinitos estimadores para qualquer que seja o parâmetro que tenhamos interesse. A questão agora é, então, estabelecer critérios que nos permitam determinar o melhor estimador em um certo conjunto. Nesse contexto, podemos definir uma série de propriedades que os estimadores possuem ou podem possuir. São elas:
 
@@ -438,17 +488,23 @@ Para iniciar esta seção, comecemos com uma definição. Chamamos de **estimaç
 
 ### Estimação pontual da média populacional
 
-Voltando aos exemplos apresentados na introdução do capítulo, suponha, primeiramente, que nosso parâmetro de interesse seja a idade média das gestantes e puérperas hospitalizadas por COVID-19 que vieram a óbito por conta dessa doença no período de março de 2020 a dezembro de 2021, a qual denotaremos por $\mu$. Como temos acesso a todos os registros dessa população, o valor desse parâmetro não é desconhecido, mas isso servirá de auxílio para exemplificar os métodos que aqui serão empregados. Criando um vetor contendo todos os elementos da população, temos:
+Retomando os exemplos apresentados na introdução do capítulo, suponha, primeiramente, que o parâmetro de interesse seja a idade média das gestantes e puérperas hospitalizadas por COVID-19 que vieram a óbito em decorrência da doença no período de março de 2020 a dezembro de 2021, a qual denotaremos por $\mu$. Como temos acesso a todos os registros dessa população, o valor desse parâmetro não é desconhecido, mas isso servirá de auxílio para exemplificar os métodos que aqui serão empregados. Criando um vetor contendo todos os elementos da população, temos:
 
 ```{r}
+# Le um arquivo RDS contendo os dados limpos sobre gestantes e puerperas com COVID-19
 dados <- readr::read_rds("dados/dados_covid[LIMPO].rds")
+
+# Cria um vetor contendo a idade, em anos, apenas das pacientes que foram a obito
 populacao1 <- dados$idade_anos[which(dados$evolucao == "óbito")]
+
+# Retorna o numero de elementos (ou seja, o tamanho da populacao de interesse)
 length(populacao1)
 ```
 
 O processo envolvido na criação do vetor `populacao1` é o seguinte: dentro do data frame `dados`, que contém todos os registros de nossa população, estamos selecionando o valor da variável `idade_anos` de todas as pacientes para as quais o valor da variável `evolucao` é "óbito". O tamanho desse vetor, obtido por meio da função `length()`, do pacote básico `{base}`, é de 1266. Ou seja, a população de gestantes e puérperas hospitalizadas por COVID-19 que vieram a óbito por conta dessa doença no período considerado é composta por 1266 elementos. Para calcular o valor da idade média dessas mulheres, podemos utilizar a função `mean()`, também do pacote básico `{base}`, que calcula a média aritmética de um dado vetor.
 
 ```{r}
+# Retorna a media do vetor
 mean(populacao1)
 ```
 
@@ -463,7 +519,10 @@ Antes da realização da amostragem, denotamos as variáveis a serem selecionada
 Dentro do R, podemos obter uma amostra aleatória de tamanho, digamos, $n = 30$, a partir da função `sample()`, do pacote básico `{base}`. Utilizaremos três argumentos dessa função: o primeiro, `x`, recebe o vetor de elementos do qual a amostra será retirada; o segundo, `size`, recebe o número de itens a serem sorteados; por fim, o terceiro argumento, `replace`, receberá o valor `TRUE`, indicando que a amostragem deve ser realizada com reposição. O código utilizado para a realização desse processo, bem como a amostra obtida, podem ser vistos abaixo.
 
 ```{r}
+# Define uma semente para garantir reprodutibilidade da amostragem
 set.seed(43)
+
+# Sorteia 30 elementos da populacao 'populacao1' com reposicao
 amostra1 <- sample(x = populacao1, size = 30, replace = TRUE)
 amostra1
 ```
@@ -551,12 +610,17 @@ Com isso, concluímos que uma estimativa pontual para a idade média das gestant
 Para o segundo exemplo, suponha que o parâmetro no qual temos interesse seja a proporção válida de gestantes e puérperas hospitalizadas por COVID-19 no período de março de 2020 a dezembro de 2021 que apresentaram diarreia como um de seus sintomas. Representaremos esse parâmetro por $p$. Assim como no exemplo anterior, podemos calcular seu valor, uma vez que temos acesso a todos os registros dessa população. Note que, como estamos tratando da proporção válida, precisamos que nossa população seja composta apenas pelas mulheres para as quais o valor da variável `diarreia` foi preenchido de forma válida (ou seja, com `sim` ou `não`). Assim, temos:
 
 ```{r}
-populacao2 <- dados$diarreia[which(!is.na(dados$diarreia) & dados$diarreia != "ignorado")]
+# Filtra a populacao sem valores 'NA' e sem a categoria 'ignorado' para a variavel 'diarreia'
+populacao2 <- dados |>
+  filter(!is.na(diarreia) & diarreia != "ignorado") |>
+  pull(diarreia)
+# Exibe o tamanho da populacao filtrada
 length(populacao2)
+# Exibe os 20 primeiros valores da populacao filtrada
 head(populacao2, 20)
 ```
 
-Observando as saídas acima, podemos notar que nossa população é formada por 8.472 elementos, que assumem valor `sim`, quando a gestante ou puérpera apresentou diarreia como um dos sintomas da COVID-19, e `não`, quando esse sintoma não foi apresentado. Para facilitar nosso trabalho a partir daqui, transformaremos os valores `sim` em 1 e os valores `não` em 0, utilizando para isso a função `ifelse()`, do pacote básico `{base}`. Essa função recebe três argumentos: o primeiro, `test`, recebe um vetor lógico; o segundo, `yes`, recebe o valor que a função deve retornar quando o dado elemento desse vetor lógico for verdadeiro; por fim, o terceiro argumento, `no`, recebe o valor que a função deve retornar quando o dado elemento do vetor lógico for falso. Observe o código e a saída abaixo.
+Observando as saídas acima, notamos que nossa população é formada por 8.472 elementos, que assumem valor `sim`, quando a gestante ou puérpera apresentou diarreia como um dos sintomas da COVID-19, e `não`, quando esse sintoma não foi apresentado. Para facilitar nosso trabalho a partir daqui, transformaremos os valores `sim` em 1 e os valores `não` em 0, utilizando para isso a função `ifelse()`, do pacote básico `{base}`. Essa função recebe três argumentos: o primeiro, `test`, recebe um vetor lógico; o segundo, `yes`, recebe o valor que a função deve retornar quando o dado elemento desse vetor lógico for verdadeiro; por fim, o terceiro argumento, `no`, recebe o valor que a função deve retornar quando o dado elemento do vetor lógico for falso. Observe o código e a saída abaixo.
 
 ```{r}
 populacao2_transformada <- ifelse(populacao2 == "sim", yes = 1, no = 0)
@@ -567,6 +631,7 @@ Calculando, por fim, a proporção desejada, que nada mais será do que a média
 
 ```{r}
 mean(populacao2_transformada)
+
 ```
 
 Logo, o valor do parâmetro $p$ - a proporção válida de gestantes e puérperas hospitalizadas por COVID-19 no período de março de 2020 a dezembro de 2021 que apresentaram diarreia como um de seus sintomas - é de 0,128, ou 12,8%. Vamos, agora, fingir que não tínhamos acesso a métodos de se calcular o valor desse parâmetro, tentando novamente estimá-lo por meio da coleta de amostras da população.
@@ -597,6 +662,7 @@ Observe que, quanto maior o valor do tamanho de amostra $n$, menor é o valor da
 
 ```{r}
 set.seed(312)
+# Sorteia 50 elementos da populacao 'populacao2_transformada' com reposicao
 amostra2 <- sample(x = populacao2_transformada, size = 50, replace = TRUE)
 amostra2
 ```
@@ -607,7 +673,7 @@ Aplicando os valores obtidos no estimador da proporção amostral, que nada mais
 mean(amostra2)
 ```
 
-Com isso, concluímos que uma estimativa pontual para a proporção válida de gestantes e puérperas hospitalizadas pela COVID-19 no período em estudo e que apresentaram diarreia como um dos sintomas da doença é de 0,14, ou de 14%. Novamente, essa estimativa depende diretamente da amostra obtida; novas amostragens quase certamente resultariam em estimativas diferentes para o parâmetro. Com isso, volta à tona a reflexão levantada no final do exemplo anterior, de que a validade de nossa afirmação sobre o verdadeiro valor de $p$ seria melhor compreendida caso levássemos em consideração a distribuição de nosso estimador, $\hat{p}$. Conseguiríamos estudar o comportamento probabilístico de $\hat{p}$ caso aumentássemos o tamanho da amostra? A resposta, já adiantando, é sim. O que utilizamos para realizar esse estudo, entretanto, será visto na próxima seção.
+Desta forma, concluímos que uma estimativa pontual para a proporção válida de gestantes e puérperas hospitalizadas pela COVID-19 no período em estudo e que apresentaram diarreia como um dos sintomas da doença é de 0,14, ou de 14%. Novamente, essa estimativa depende diretamente da amostra obtida; novas amostragens quase certamente resultariam em estimativas diferentes para o parâmetro. Com isso, volta à tona a reflexão levantada no final do exemplo anterior, de que a validade de nossa afirmação sobre o verdadeiro valor de $p$ seria melhor compreendida caso levássemos em consideração a distribuição de nosso estimador, $\hat{p}$. Conseguiríamos estudar o comportamento probabilístico de $\hat{p}$ caso aumentássemos o tamanho da amostra? A resposta, já adiantando, é sim. O que utilizamos para realizar esse estudo, entretanto, será visto na próxima seção.
 
 ## A distribuição amostral de estimadores {#sec-dist_amostral}
 
@@ -630,6 +696,7 @@ Médias e variâncias não são, todavia, tudo aquilo que precisamos para determ
 set.seed(43)
 M <- 100
 n <- 15
+# Gera M amostras de tamanho n da populacao 'populacao1', com reposicao
 amostras_pop1 <- replicate(M, expr = sample(x = populacao1, size = n, replace = TRUE))
 amostras_pop1[, 1:5]
 ```
@@ -645,14 +712,18 @@ amostras_pop2[, 1:5]
 Com as amostras em mãos, o próximo passo é calcular o valor do respectivo estimador em cada uma delas. Realizaremos esse processo com a função `apply()`, também do pacote básico `{base}`, a qual permite que apliquemos qualquer função em todas as linhas ou colunas de uma matriz. Utilizaremos três de seus argumentos: o primeiro, `X`, recebe a matriz na qual queremos aplicar a função; o segundo, `MARGIN`, recebe a direção em que a função será aplicada (1 caso queiramos que a função seja aplicada nas linhas da matriz, ou 2 caso queiramos a aplicar em suas colunas); por fim, o terceiro, `FUN`, recebe a função que queremos aplicar. O código utilizado nesse processo, bem como parte dos vetores obtidos, podem ser vistos abaixo.
 
 ```{r}
+# Calcula a media de cada amostra da população 1
 x_barras <- apply(X = amostras_pop1, MARGIN = 2, FUN = mean)
 head(x_barras)
 
+# Calcula a media de cada amostra da população 2
 p_chapeus <- apply(X = amostras_pop2, MARGIN = 2, FUN = mean)
 head(p_chapeus)
 ```
 
 Por fim, criemos os histogramas da distribuição de cada estimador. Como já discutimos sobre a criação de histogramas no capítulo de Estatística Descritiva, o código abaixo deve ser familiar.
+
+## AQUI
 
 ```{r}
 library(ggplot2)
@@ -759,7 +830,7 @@ ggplot(data.frame(p_chapeu = p_chapeus), aes(x = p_chapeu))  +
 
 Para $n = 50$,
 
-```{r echo = FALSE}
+```{r, echo = FALSE}
 set.seed(43)
 M <- 100
 n <- 50
@@ -810,12 +881,11 @@ ggplot(data.frame(p_chapeu = p_chapeus), aes(x = p_chapeu))  +
     y = 11,
     label = paste("Valor médio das estimativas:", round(mean(p_chapeus), 3))
   )
-
 ```
 
 Para $n = 100$,
 
-```{r echo = FALSE}
+```{r, echo = FALSE}
 set.seed(43)
 M <- 100
 n <- 100
@@ -938,7 +1008,7 @@ Com isso, aqui terminamos o conteúdo referente à estimação pontual. Toda a t
 
 Até este ponto, todos os estimadores que apresentamos e discutimos são pontuais, uma vez que fornecem um único valor como estimativa para o parâmetro de interesse. Estimativas pontuais, por mais úteis que sejam, acabam fornecendo uma informação incompleta sobre o valor estimado do parâmetro em questão. Como estimadores são variáveis aleatórias e, portanto, possuem uma distribuição de probabilidade, seria de nosso interesse que a estimativa a ser apresentada levasse em consideração uma medida de seu possível erro. Essa essa medida pode ser, por exemplo, um intervalo relacionado à dimensão da *confiança* que temos de que o verdadeiro valor do parâmetro está sendo captado. Dessa forma, a partir daqui, entramos no campo da **estimação intervalar**. Dentro da Inferência Clássica, que estamos estudando neste capítulo, estimativas intervalares se dão a partir dos chamados **intervalos de confiança**. Intervalos de confiança incorporam, à estimativa pontual do parâmetro, informações a respeito da variabilidade do estimador. Além disso, eles são obtidos através da distribuição amostral de seus estimadores, o que justifica ainda mais o conteúdo que vimos na última subseção de estimação pontual.
 
-Como o intuito deste livro não é conter uma porção pesada de teoria, introduziremos o conceito de intervalos de confiança a partir de exemplos, realizando explicações sobre os elementos envolvidos em sua construção conforme seja necessário. Caso seja de seu interesse, já publicamos, no site do Observatório, um texto que pode te ajudar a entender o melhor a teoria por trás dos intervalos de confiança, que conta também com o detalhamento de um dos principais métodos utilizados para a construção desses intervalos: o **método da quantidade pivotal**. O post está disponível <a href = https://observatorioobstetricobr.org/livro-e-tutoriais/intervalos-de-confianca/ target = _blank> neste link </a>. Com isso em mente, prossigamos para nosso primeiro exemplo: a criação de intervalos de confiança para a média amostral.
+Como o intuito deste livro não é conter uma porção pesada de teoria, introduziremos o conceito de intervalos de confiança a partir de exemplos, realizando explicações sobre os elementos envolvidos em sua construção conforme seja necessário. Caso seja de seu interesse, já publicamos, no site do Observatório, um texto que pode te ajudar a entender o melhor a teoria por trás dos intervalos de confiança, que conta também com o detalhamento de um dos principais métodos utilizados para a construção desses intervalos: o **método da quantidade pivotal**. O post está disponível <a href = https://observatorioobstetricobr.org/ciencia-de-dados/intervalos-de-confianca/ target = _blank> neste link </a>. Com isso em mente, prossigamos para nosso primeiro exemplo: a criação de intervalos de confiança para a média amostral.
 
 ### Intervalos de confiança para a média amostral quando a variância populacional é conhecida
 
@@ -1233,3 +1303,19 @@ ic_proporcao(dados = amostra3, alfa = 0.05, tipo = "otimista")
 ```
 
 Neste presente exemplo, obter uma amostra de tamanho maior é muito simples - basta que mudemos o valor de um argumento de uma função, uma vez que estamos em posse dos dados de toda a população. Na vida real, é claro, as coisas são completamente diferentes, e obter uma amostra maior pode ser, por vezes, inviável. Dessa forma, ao se planejar uma pesquisa, é preciso encontrar um ponto ideal que permita equilibrar custos, tempo e viabilidade com a precisão das informações que podem ser obtidas por meio da Estatística.
+
+## Cálculo do tamanho amostral para estimação precisa
+
+Considerando os métodos de estimação que foram apresentados, ainda há uma questão importante que não foi tratada neste capítulo: como definir o tamanho de uma amostra. Não existe valor pré-estabelecido para tamanho de uma amostra de interesse, esse valor, em resumo, é definido para cada caso dependendo essencialmente de duas condições:objetivo do estudo e tipo de desfecho analisado. 
+
+É fundamental que a amostra seja suficientemente precisa para tornar possível a realização de inferências confiáveis. 
+Uma amostra adequada deve ter poder estatístico suficiente para detectar diferenças ou efeitos presentes na população, bem como,  precisão adequada, normalmente avaliada pela margem de erro cálculada pelo erro quadrático médio.
+
+O cálculo do tamanho amostral leva em conta três componentes essenciais: (1) a variabilidade esperada do fenômeno estudado (σ² ou p(1-p)), (2) a margem de erro (E) para as estimativas, e (3) o nível de confiança desejado (1-α). Esses elementos se relacionam diretamente com as propriedades dos estimadores discutidas anteriormente, como não-vício e consistência, garantindo que as conclusões do estudo sejam tanto precisas quanto estatisticamente significativas.
+
+Neste capítulo, será apresentado métodos de cálculo amostral para planejamentos experimentais 
+
+
+## Referências
+
+OBSERVATÓRIO OBSTÉTRICO BRASILEIRO. *Função de verossimilhança*. Disponível em: https://observatorioobstetricobr.org/ciencia-de-dados/funcao-de-verossimilhanca/. Acesso em: 8 jun. 2025.
