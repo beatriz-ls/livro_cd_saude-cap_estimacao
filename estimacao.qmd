@@ -428,11 +428,9 @@ ggplot(data=df_exp, aes(x=exponencial)) +
 
 ```
 
-Também podemos escrever a sua esperança e variância como
-$$
+Também podemos escrever a sua esperança e variância como $$
 E(X)=\frac{1}{\lambda}
-$$
-$$
+$$ $$
 Var(X)=\frac{1}{\lambda^2}
 $$
 
@@ -1306,15 +1304,13 @@ Neste presente exemplo, obter uma amostra de tamanho maior é muito simples - ba
 
 ## Cálculo do tamanho amostral para estimação precisa
 
-Considerando os métodos de estimação que foram apresentados, ainda há uma questão importante que não foi tratada neste capítulo: como definir o tamanho de uma amostra. Não existe valor pré-estabelecido para tamanho de uma amostra de interesse, esse valor, em resumo, é definido para cada caso dependendo essencialmente de duas condições:objetivo do estudo e tipo de desfecho analisado. 
+Considerando os métodos de estimação que foram apresentados, ainda há uma questão importante que não foi tratada neste capítulo: como definir o tamanho de uma amostra. Não existe valor pré-estabelecido para tamanho de uma amostra de interesse, esse valor, em resumo, é definido para cada caso dependendo essencialmente de duas condições:objetivo do estudo e tipo de desfecho analisado.
 
-É fundamental que a amostra seja suficientemente precisa para tornar possível a realização de inferências confiáveis. 
-Uma amostra adequada deve ter poder estatístico suficiente para detectar diferenças ou efeitos presentes na população, bem como,  precisão adequada, normalmente avaliada pela margem de erro cálculada pelo erro quadrático médio.
+É fundamental que a amostra seja suficientemente precisa para tornar possível a realização de inferências confiáveis. Uma amostra adequada deve ter poder estatístico suficiente para detectar diferenças ou efeitos presentes na população, bem como, precisão adequada, normalmente avaliada pela margem de erro cálculada pelo erro quadrático médio.
 
 O cálculo do tamanho amostral leva em conta três componentes essenciais: (1) a variabilidade esperada do fenômeno estudado (σ² ou p(1-p)), (2) a margem de erro (E) para as estimativas, e (3) o nível de confiança desejado (1-α). Esses elementos se relacionam diretamente com as propriedades dos estimadores discutidas anteriormente, como não-vício e consistência, garantindo que as conclusões do estudo sejam tanto precisas quanto estatisticamente significativas.
 
-Neste capítulo, será apresentado métodos de cálculo amostral para planejamentos experimentais 
-
+Neste capítulo, será apresentado métodos de cálculo amostral para um tipo de delineamenstoa amostral chamado amotragem aleatória simples. Como já introduzido, esse delineamento ocorre em dois tipos, amostragem aleatória simples com reposição e sem reposição. 
 
 ## Referências
 
