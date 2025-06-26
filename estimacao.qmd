@@ -428,9 +428,11 @@ ggplot(data=df_exp, aes(x=exponencial)) +
 
 ```
 
-Também podemos escrever a sua esperança e variância como $$
+Também podemos escrever a sua esperança e variância como
+$$
 E(X)=\frac{1}{\lambda}
-$$ $$
+$$
+$$
 Var(X)=\frac{1}{\lambda^2}
 $$
 
@@ -1310,7 +1312,15 @@ Considerando os métodos de estimação que foram apresentados, ainda há uma qu
 
 O cálculo do tamanho amostral leva em conta três componentes essenciais: (1) a variabilidade esperada do fenômeno estudado (σ² ou p(1-p)), (2) a margem de erro (E) para as estimativas, e (3) o nível de confiança desejado (1-α). Esses elementos se relacionam diretamente com as propriedades dos estimadores discutidas anteriormente, como não-vício e consistência, garantindo que as conclusões do estudo sejam tanto precisas quanto estatisticamente significativas.
 
-Neste capítulo, será apresentado métodos de cálculo amostral para um tipo de delineamento amostral chamado amotragem aleatória simples. Como já introduzido, esse delineamento é probabilistico e ocorre em dois tipos: amostragem aleatória simples com reposição e sem reposição. Um delineamento é definido como probabilistico se todas as unidades da população têm uma probabilidade conhecida e diferente de zero de serem selecionadas para a amostra. Definindo formalmente, considere uma população $U$ de tamanho $N$ e uma amostra de tamanho $n$, um delineamento é probabilistico quando cada elemento $i \in U$ tem probabilidade $P(i\in amostra) = frac{n}{N}$.
+Neste capítulo, será apresentado métodos de cálculo amostral para um tipo de delineamento amostral chamado amostragem aleatória simples. Como já introduzido, esse delineamento é probabilistico e ocorre em dois tipos: amostragem aleatória simples com reposição e sem reposição. Um delineamento é definido como probabilistico se todas as unidades da população têm uma probabilidade conhecida e diferente de zero de serem selecionadas para a amostra. Definindo formalmente, considere uma população $U$ de tamanho $N$ e uma amostra de tamanho $n$, um delineamento é probabilistico quando cada elemento $i \in U$ tem probabilidade $P(i\in amostra) = frac{n}{N}$.
+
+### Amostragem Aleatória Simples
+
+A amostragem aleatória simples (AAS) é definida como uma técnica de amostragem probabilística na qual todas as unidades da população têm a mesma probabilidade de seleção e todas as amostras possíveis de tamanho *n* são igualmente prováveis. A AAS pode ocorrer sob duas modalidades:
+
+#### Amostragem Aleatória Simples com Reposição
+
+
 
 
 
