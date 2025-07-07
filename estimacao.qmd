@@ -510,9 +510,9 @@ mean(populacao1)
 
 A saída do código nos revela o valor de $31.81$ anos. Note que esse valor não representa uma estimativa; ele é, de fato, o verdadeiro valor do parâmetro $\mu$. O que aconteceria, entretanto, se tivéssemos acesso apenas a uma amostra da população em questão? Poderíamos garantir que os resultados obtidos seriam válidos para todas as gestantes e puérperas desse grupo? É o que começaremos a ver na subseção seguinte.
 
-#### Trabalhando com amostras da população
+#### Trabalhando com amostras de delineamento de amostragem aleatória simples
 
-Para exemplificar os conceitos de estimação definidos anteriormente, simularemos a retirada de amostras da população de gestantes e puérperas com a qual estamos trabalhando. Dentre as várias maneiras de se obter amostras de uma população, utilizaremos, aqui, a **amostragem aleatória simples (AAS) com reposição**, uma técnica de amostragem probabilística (ou seja, que atribui a cada elemento da população uma probabilidade, conhecida *a priori*, de pertencer à amostra), na qual todos os elementos da população possuem a mesma probabilidade de serem sorteados. Utilizaremos a AAS com reposição, que admite a possibilidade de um elemento ser selecionado mais de uma vez, por sua maior simplicidade teórica e por algumas implicações matemáticas e estatísticas que ela carrega, como a independência entre as unidades sorteadas.
+Para exemplificar os conceitos de estimação definidos anteriormente,  imularemos a retirada de amostras da população de gestantes e puérperas com a qual estamos trabalhando. Será aplicado um tipo de delineamento amostral chamado amostragem aleatória simples. Como já introduzido, esse delineamento é probabilistico e ocorre em dois tipos: amostragem aleatória simples com reposição e sem reposição. Um delineamento é definido como probabilistico se todas as unidades da população têm uma probabilidade conhecida e diferente de zero de serem selecionadas para a amostra. Definindo formalmente, considere uma população $U$ de tamanho $N$ e uma amostra de tamanho $n$, um delineamento é probabilistico quando cada elemento $i \in U$ tem probabilidade $P(i\in amostra) \neq 0$. Na amostragem aleatória simples com reposição, cada unidade da população pode ser selecionada mais de uma vez. Isso significa que, após a seleção de uma unidade, ela é devolvida à população antes da próxima seleção. Assim, a probabilidade de seleção de cada unidade permanece constante a cada sorteio, ou seja, $P(i \in amostra) = frac{n}{N}.
 
 Antes da realização da amostragem, denotamos as variáveis a serem selecionadas por $X_1, X_2, ..., X_{n}$, sendo $X_i$ a variável aleatória que representa a idade da $i$-ésima gestante ou puérpera hospitalizada pela COVID-19 e que faleceu em decorrência dessa doença, com $i = 1, 2, ..., n$. Dizemos que essa sequência de variáveis aleatórias forma uma amostra aleatória de tamanho $n$. Sendo, novamente, $\mu$ o parâmetro que representa a idade média da população em questão, e denotando por $\sigma^2$ o parâmetro que representa a variância populacional das idades dessas gestantes e puérperas, temos, ainda, que $E(X_i) = \mu$ e que $Var(X_i) = \sigma^2$.
 
@@ -723,7 +723,6 @@ head(p_chapeus)
 
 Por fim, criemos os histogramas da distribuição de cada estimador. Como já discutimos sobre a criação de histogramas no capítulo de Estatística Descritiva, o código abaixo deve ser familiar.
 
-## AQUI
 
 ```{r}
 library(ggplot2)
@@ -1312,15 +1311,38 @@ Considerando os métodos de estimação que foram apresentados, ainda há uma qu
 
 O cálculo do tamanho amostral leva em conta três componentes essenciais: (1) a variabilidade esperada do fenômeno estudado (σ² ou p(1-p)), (2) a margem de erro (E) para as estimativas, e (3) o nível de confiança desejado (1-α). Esses elementos se relacionam diretamente com as propriedades dos estimadores discutidas anteriormente, como não-vício e consistência, garantindo que as conclusões do estudo sejam tanto precisas quanto estatisticamente significativas.
 
-Neste capítulo, será apresentado métodos de cálculo amostral para um tipo de delineamento amostral chamado amostragem aleatória simples. Como já introduzido, esse delineamento é probabilistico e ocorre em dois tipos: amostragem aleatória simples com reposição e sem reposição. Um delineamento é definido como probabilistico se todas as unidades da população têm uma probabilidade conhecida e diferente de zero de serem selecionadas para a amostra. Definindo formalmente, considere uma população $U$ de tamanho $N$ e uma amostra de tamanho $n$, um delineamento é probabilistico quando cada elemento $i \in U$ tem probabilidade $P(i\in amostra) = frac{n}{N}$.
+Nesta seção, será apresentado o cálculo de tamanho amostral ideal considerando o delineamento de amostragem aleatória simples com reposição, já exemplicado ao longo desse capitulo.
 
-### Amostragem Aleatória Simples
+### Cálculo de tamanho amostral para média com variância conhecida
 
-A amostragem aleatória simples (AAS) é definida como uma técnica de amostragem probabilística na qual todas as unidades da população têm a mesma probabilidade de seleção e todas as amostras possíveis de tamanho *n* são igualmente prováveis. A AAS pode ocorrer sob duas modalidades:
+O objetivo é estimar o *n* ideal de tal forma que o estimador considerado tenha um erro máximo de estimação igual a E, ou seja:
 
-#### Amostragem Aleatória Simples com Reposição
+$$ P ( |\bar{Y} - \mu| \leq E) =  1 - \alpha$$
+Retomando o intervalo de confiança para a média amostral quando a variância populacional é conhecida calculado, temos que
 
+$$
+IC(\mu,\ 1 - \alpha) = \left(\bar{X} - z_{1 - \alpha/2}\frac{\sigma}{\sqrt{n}};\; \bar{X} + z_{1 - \alpha/2}\frac{\sigma}{\sqrt{n}}\right).
+$$
+Sendo $E = z_{1 - \alpha/2}\frac{\sigma}{\sqrt{n}}$. Assim, isolando o n, temos:
 
+$$n = \frac{ \sigma^2}{(E/z_{1-\alpha/2})^2}$$
+
+Retomando o exemplo de retirada de amostras da população de gestantes e puérperas, obtivemos com n = 30 uma estimativa pontual para a idade média das gestantes e puérperas que faleceram em decorrência da COVID-19 é de $30.73$. Recalculando com 
+
+```{r}
+set.seed(533)
+
+E <- 2        # Margem de erro de +- 2 anos
+alpha <- 0.05 # Nível de significância (95% de confiança)
+
+# Valor crítico z (usando qnorm)
+z_critical <- qnorm(1 - alpha/2)  # 1.96 para 95% de confiança
+
+# Fórmula do tamanho da amostra
+n <- var(populacao1) / ((E / z_critical)^2)
+
+n
+```
 
 
 
